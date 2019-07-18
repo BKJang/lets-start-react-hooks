@@ -32,4 +32,4 @@ function User({ user, handleRemoveElement, handleToggleElement }) {
   );
 }
 
-export default User;
+export default React.memo(User);
