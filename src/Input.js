@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 function InputSample() {
   const [input, setInput] = useState({
@@ -6,6 +6,7 @@ function InputSample() {
     nickName: '',
   });
 
+  const nameInput = useRef();
   const { name, nickName } = input;
 
   const handleInput = (e) => {
@@ -22,11 +23,12 @@ function InputSample() {
       name: '',
       nickName: ''
     })
+    nameInput.current.focus();
   }
 
   return (
     <div>
-      <input name='name' placeholder='이름' onChange={handleInput} value={name}/>
+      <input name='name' placeholder='이름' onChange={handleInput} value={name} ref={nameInput}/>
       <input name='nickName' placeholder='닉네임' onChange={handleInput} value={nickName}/>
       <button onClick={handleClear}>초기화</button>
       <div>
