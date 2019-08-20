@@ -1,24 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
+// LOADING, SUCCESS, ERROR
+function reducer(state, action) {
+  switch(action.type) {
+    case 'LOADING':
+      return {
+        loading: true,
+        error: null,
+        data: null,
+      }
+    case 'SUCCESS':
+      return {
+        loading: false,
+        data: action.data,
+        error: null,
+      }
+    case 'ERROR':
+      return {
+        loading: false,
+        data: null,
+        error: action.error,
+      }
+    default:
+      throw new Error(`unhandled action type ${action.type}`);
+  }
+}
+
 const Users = () => {
-  const [users, setUsers] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [state, dispatch] = useReducer(reducer, {
+    loading: false,
+    data: null,
+    error: null,
+  });
 
   const fetchUsers = async () => {
+    dispatch({ type: 'LOADING'});
     try {
-      setUsers(null);
-      setError(null);
-      setLoading(true);
       const response = await axios.get(
         'https://jsonplaceholder.typicode.com/users'
       );
-      setUsers(response.data);
+      dispatch({ type: 'SUCCESS', data: response.data });
     } catch (error) {
-      setError(error);
+      dispatch({ type: 'ERROR', error: error });
     }
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -26,6 +51,7 @@ const Users = () => {
 
   }, []);
 
+  const { loading, data: users, error } = state;
   if (loading) return <div>로딩중..</div>
   if (error) return <div>에러가 발생했습니다.</div>
   if (!users) return <div>데이터가 없습니다.</div>
